@@ -24,7 +24,7 @@ pipeline {
             }
 
             steps {
-                dir('java-app') {
+                dir('hello-world/java-app') {
                     sh 'mvn clean package'
                 }
             }
@@ -38,7 +38,7 @@ pipeline {
             }
 
             steps {
-                dir('java-app') {
+                dir('hello-world/java-app') {
                     sh 'java -cp target/classes com.example.HelloWorld'
                 }
             }
@@ -52,7 +52,7 @@ pipeline {
             }
 
             steps {
-                dir('node-app') {
+                dir('hello-world/node-app') {
                     sh '''
                     npm install
                     npm start
