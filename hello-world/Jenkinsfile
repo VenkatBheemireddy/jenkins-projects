@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven'
+        nodejs 'NodeJS'
+    }
+
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                git 'https://github.com/your-repo/jenkins-demo.git'
+            }
+        }
+
+        stage('Build Java App') {
+            steps {
+                dir('java-app') {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+
+        stage('Run Java App') {
+            steps {
+                dir('java-app') {
+                    sh 'java -cp target/classes com.example.HelloWorld'
+                }
+            }
+        }
+
+        stage('Install Node Dependencies') {
+            steps {
+                dir('node-app') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Run Node App') {
+            steps {
+                dir('node-app') {
+                    sh 'npm start'
+                }
+            }
+        }
+
+    }
+}
