@@ -1,20 +1,22 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven'
-        nodejs 'NodeJS'
-    }
-
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
                 git 'https://github.com/VenkatBheemireddy/jenkins-projects.git'
             }
         }
 
-        stage('Build Java App') {
+        stage('Build Java with Maven Container') {
+            agent {
+                docker {
+                    image 'maven:3.9.9-eclipse-temurin-17'
+                    args '-v $HOME/.m2:/root/.m2'
+                }
+            }
+
             steps {
                 dir('java-app') {
                     sh 'mvn clean package'
@@ -23,6 +25,12 @@ pipeline {
         }
 
         stage('Run Java App') {
+            agent {
+                docker {
+                    image 'openjdk:17'
+                }
+            }
+
             steps {
                 dir('java-app') {
                     sh 'java -cp target/classes com.example.HelloWorld'
@@ -30,18 +38,19 @@ pipeline {
             }
         }
 
-        stage('Install Node Dependencies') {
-            steps {
-                dir('node-app') {
-                    sh 'npm install'
+        stage('Run NodeJS App') {
+            agent {
+                docker {
+                    image 'node:20'
                 }
             }
-        }
 
-        stage('Run Node App') {
             steps {
                 dir('node-app') {
-                    sh 'npm start'
+                    sh '''
+                    npm install
+                    npm start
+                    '''
                 }
             }
         }
